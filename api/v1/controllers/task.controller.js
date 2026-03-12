@@ -117,3 +117,22 @@ module.exports.changeMulti = async (req,res)=>{
     })
   }
 }
+
+// [POST]: /api/v1/tasks/change-multi
+module.exports.createPost = async (req,res)=>{
+  try{
+   const task = new Task(req.body)
+   const data = await task.save()
+    res.json({
+      code: 400,
+      message: "Tạo thành công",
+      data:data
+    })
+  }
+  catch(error){
+    res.json({
+      code: 400,
+      message: "Tạo công việc thất bại"
+    })
+  }
+}
