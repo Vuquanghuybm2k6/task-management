@@ -1,6 +1,7 @@
 const Task = require("../../../models/task.model")
 const paginationHelper = require("../../../helpers/pagination")
 const searchHelper = require("../../../helpers/search")
+
 // [GET]: /api/v1/tasks
 module.exports.index = async (req,res)=>{
   const find = {
@@ -100,6 +101,18 @@ module.exports.changeMulti = async (req,res)=>{
       res.json({
         code: 200,
         message: "Cập nhật trạng thái thành công"
+      })
+      break
+    case "delete":
+      await Task.updateMany({
+        _id:{$in:ids}
+      },{
+        deleted: true,
+        deletedAt: new Date()
+      })
+      res.json({
+        code: 200,
+        message: "Xóa công việc thành công"
       })
       break
     default:
