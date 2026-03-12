@@ -12,4 +12,6 @@ router.patch("/change-multi", controller.changeMulti)
 
 router.post("/create", controller.createPost)
 
+router.patch("/edit/:id", controller.edit)
+
 module.exports = router
