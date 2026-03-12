@@ -4,10 +4,22 @@ module.exports.index = async (req,res)=>{
   const find = {
     deleted: false
   }
+  // Lọc Theo trạng thái
   if(req.query.status){
     find.status = req.query.status
   }
-  const tasks = await Task.find(find)
+
+  // Sort
+  const sort = {}
+  if(req.query.sortKey && req.query.sortValue){
+    sort[req.query.sortKey] = req.query.sortValue
+  }
+  else{
+    sort.position = "desc"
+  }
+  // End Sort
+
+  const tasks = await Task.find(find).sort(sort)
   res.json(tasks)
 }
 // [GET]: /api/v1/tasks/detail/:id
