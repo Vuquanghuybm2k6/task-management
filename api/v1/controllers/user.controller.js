@@ -60,7 +60,7 @@ module.exports.login = async (req, res) => {
     return res.json({
       code: 200,
       message: "Đăng nhập thành công",
-      token: token
+      token: user.token
     })
   } catch (error) {
     return res.json({
@@ -88,7 +88,7 @@ module.exports.forgotPassword = async (req, res) => {
     const objectForgotPassword = {
       email: email,
       otp: otp,
-      expireAt: Date.now() + timeExpire*60
+      expireAt: Date.now() + timeExpire*60*1000
     }
     const forgotPassword = new ForgotPassword(objectForgotPassword)
     await forgotPassword.save()
@@ -102,4 +102,62 @@ module.exports.forgotPassword = async (req, res) => {
       code: 200,
         message: "Đã gửi mã OTP qua email"
     })
+}
+
+// [POST]: /api/v1/users/password/otp
+module.exports.otpPassword = async (req, res) => {
+  const email = req.body.email
+  const otp = req.body.otp
+  const result = await ForgotPassword.findOne({
+    email: email,
+    otp: otp
+  })
+  if (!result) {
+    return res.json({
+      code: 400,
+      message: "OTP không hợp lệ"
+    })
+  } 
+  const user = await User.findOne({
+    email: email,
+    deleted: false
+  })
+  res.cookie("token", user.token)
+  return res.json({
+    code: 200,
+      message: "Xác thực thành công",
+      token: user.token
+  })
+}
+
+// [POST]: /api/v1/users/password/reset
+module.exports.resetPassword = async (req, res) => {
+  try{
+    const token = req.body.token
+    const password = req.body.password
+    const user = await User.findOne({
+      token: token
+    })
+    if(md5(password) === user.password){
+      return res.json({
+        code: 200,
+          message: "Vui lòng nhập mật khẩu mới khác với mật khẩu cũ",
+      })
+    }
+    await User.updateOne({
+      token: token
+    },{
+      password: md5(password)
+    })
+    return res.json({
+      code: 200,
+        message: "Đổi mật khẩu thành công"
+    })
+  }
+  catch(error){
+    return res.json({
+      code: 400,
+      message: "Đổi mật khẩu thất bại"
+    })
+  }
 }
