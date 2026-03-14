@@ -36,7 +36,6 @@ module.exports.register = async (req, res) => {
 
 // [POST]: /api/v1/users/login
 module.exports.login = async (req, res) => {
-  console.log(req.body)
   try {
     const email = req.body.email
     const password = req.body.password
@@ -164,22 +163,18 @@ module.exports.resetPassword = async (req, res) => {
 
 // [GET]: /api/v1/users/detail
 module.exports.detail = async (req, res) => {
+  console.log(req.cookies.token)
   try{
-    const token = req.cookies.token
-    const user = await User.findOne({
-      token: token,
-      deleted: false
-    }).select("-password - token")
     res.json({
       code: 200,
       message: "Truy cập thành công",
-      info: user
+      info: req.user
     })
   }
   catch(error){
      res.json({
       code: 400,
-      message: "Truy cập thất bại công"
+      message: "Truy cập thất bại"
     })
   }
 }
