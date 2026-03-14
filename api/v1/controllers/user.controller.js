@@ -190,3 +190,12 @@ module.exports.list = async (req, res) => {
     users: users
   })
 }
+
+// [GET]: /api/v1/users/logout
+module.exports.logout = async (req, res) => {
+  res.clearCookie("token")
+  res.json({
+    code: 200,
+    message: "Đăng xuất thành công"
+  })
+}
